@@ -22,13 +22,10 @@ var renderer, scene, camera;
 var stats;
 var arToolKitSource, arToolKitContext;
 var markerHiro;
-<<<<<<< HEAD
-var theta = 0;
-=======
+
 
 var theta = 0;
 
->>>>>>> 52c6a03a3073860d3ae37eb9b848c52c3cbb6872
 init();
 animate();
 
@@ -128,15 +125,7 @@ function addMarkerHiro(){
 				new THREE.MeshNormalMaterial({transparent:true, opacity:0.3}));
 	mesh.position.y	= 0.5
 	markerRoot.add (mesh);
-<<<<<<< HEAD
-		*/
-	var ball = new THREE.Mesh(new THREE.SphereGeometry(0.1,20,20),new THREE.MeshNormalMaterial());
-	markerRoot.add(ball);
-	ball.position.y = 0.01;
-	var grid = new THREE.GridHelper(1,10,'red','white');
-	markerRoot.add(grid);
-=======
-*/
+	*/
 
 	var ball = new THREE.Mesh (new THREE.SphereGeometry (0.1, 20,20), new THREE.MeshNormalMaterial());
 	markerRoot.add (ball);
@@ -145,7 +134,7 @@ function addMarkerHiro(){
 	var grid = new THREE.GridHelper (1, 10, 'red', 'white');
 	markerRoot.add (grid);
 			
->>>>>>> 52c6a03a3073860d3ae37eb9b848c52c3cbb6872
+
 	return markerRoot;
 }	
 
@@ -155,14 +144,9 @@ function animate() {
 	
 	if( arToolkitSource.ready === false )	return
 	arToolkitContext.update( arToolkitSource.domElement )
-<<<<<<< HEAD
 	theta += 0.1;
 	markerHiro.children[0].position.set(0.5*Math.sin(theta),0.1,0.5*Math.cos(theta));
-=======
 
-	theta += 0.01;
-	markerHiro.children[0].position.set (0.5*Math.sin(theta), 0.1, 0.5*Math.cos(theta));
->>>>>>> 52c6a03a3073860d3ae37eb9b848c52c3cbb6872
 	
 	renderer.render (scene, camera);	
 }
