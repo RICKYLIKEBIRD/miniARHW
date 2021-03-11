@@ -145,11 +145,13 @@
             markerHiro.children[0].position.set(0.5 * Math.sin(theta), 0.1, 0.5 * Math.cos(theta));
 			
 			if(flag == 0){
+				
 				poy+=0.01;
 			}
 			else{
 				poy-=0.01;
 			}
+			markerHiro.children[1].position.setHSL('red',poy,0.5);
 			markerHiro.children[1].position.set(0, poy, 0);
 			if(poy >= 1 || poy < 0) flag = !flag;
 			
