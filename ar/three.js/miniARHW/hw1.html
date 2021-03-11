@@ -25,7 +25,8 @@
         var markerHiro;
         var theta = 0;
 		var poy = 0, flag = 0;
-
+		var c;
+		var m;
         init();
         animate();
 
@@ -95,7 +96,7 @@
                 // copy projection matrix to camera
                 camera.projectionMatrix.copy(arToolkitContext.getProjectionMatrix());
             })
-
+			c = new THREE.Color('red');
             markerHiro = addMarkerHiro();
             scene.add(markerHiro);
 
@@ -124,10 +125,10 @@
             var ball = new THREE.Mesh(new THREE.SphereGeometry(0.1, 20, 20), new THREE.MeshNormalMaterial());
             markerRoot.add(ball);
             ball.position.y = 0.5;
-			
-			var chimney = new THREE.Mesh(new THREE.CylinderGeometry(0.25, 0.25, 0.5, 12), new THREE.MeshNormalMaterial());
+			m = new THREE.MeshBasicMaterial( { color: 0xff0000} );
+			var chimney = new THREE.Mesh(new THREE.CylinderGeometry(0.25, 0.25, 0.5, 12), m);
             markerRoot.add(chimney);
-			
+			//chimney.material.color = c;
 			var grid = new THREE.GridHelper(1, 10, 'red', 'white');
             markerRoot.add(grid);
 
@@ -151,7 +152,8 @@
 			else{
 				poy-=0.01;
 			}
-			markerHiro.children[1].position.setHSL('red',poy,0.5);
+			markerHiro.children[1].material.color.setHSL(0,poy,0.5);
+			
 			markerHiro.children[1].position.set(0, poy, 0);
 			if(poy >= 1 || poy < 0) flag = !flag;
 			
