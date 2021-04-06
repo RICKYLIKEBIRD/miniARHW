@@ -42,7 +42,7 @@ var arToolkitSource, arToolkitContext;
 /////////////
 var whRatio, halfW, halfH;
 var button1;
-var _iOSDevice;
+var _phoneDevice;
 var angle = 0;
 var omega = 0;
 var group;
@@ -55,9 +55,9 @@ animate();
 function init() {
 
 	// https://stackoverflow.com/questions/9038625/detect-if-device-is-ios?utm_medium=organic&utm_source=google_rich_qa&utm_campaign=google_rich_qa
-	let _iOSDevice = !!navigator.platform.match(/iPhone|iPod|iPad/);
+	let _phoneDevice = !!navigator.platform.match(/iPhone|iPod|iPad|Android/);
 
-	console.log ('iOS: ' + _iOSDevice)
+	console.log ('iOS: ' + _phoneDevice)
 
 
 	renderer	= new THREE.WebGLRenderer({
@@ -220,14 +220,14 @@ function init() {
 		onResize()
 	})
 	
-	//if(_iOSDevice){
+	if(_phoneDevice){
 		window.addEventListener('touchstart', onTouchStart, false);
 		window.addEventListener('touchend', onTouchEnd, false);
-	//}
-	//else{
+	}
+	else{
 		window.addEventListener ('mousedown', onMouseDown, false);
 		window.addEventListener ('mouseup', onMouseUp, false);
-	//}
+	}
 		
 }
 
