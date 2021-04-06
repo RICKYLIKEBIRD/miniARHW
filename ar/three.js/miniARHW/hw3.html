@@ -220,14 +220,14 @@ function init() {
 		onResize()
 	})
 	
-	if(_iOSDevice){
+	//if(_iOSDevice){
 		window.addEventListener('touchstart', onTouchStart, false);
 		window.addEventListener('touchend', onTouchEnd, false);
-	}
-	else{
+	//}
+	//else{
 		window.addEventListener ('mousedown', onMouseDown, false);
 		window.addEventListener ('mouseup', onMouseUp, false);
-	}
+	//}
 		
 }
 
