@@ -239,17 +239,12 @@ function animate() {
 	renderer.render (sceneHUD, cameraHUD);
 	var dt = 0.2;
 	var maxOmega = 10;
+	omega -= .5 * dt;
 	if(cubeSpin){
 	isActive = !isActive;
 		omega+= 0.3*dt;
-	}else{
-		if(isActive)
-			omega-= .5*dt;
-		else
-			omega = 0;
 	}
 	
-		
 	omega = clamp(omega,0,maxOmega)
 	angle += omega *dt;
 	
