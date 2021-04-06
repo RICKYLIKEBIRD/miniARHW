@@ -121,21 +121,6 @@ function init() {
 			sceneHUD.add (button);
 		},
 	);
-	var l = new THREE.TextureLoader();
-	l.load{
-		'https://i.imgur.com/KuMA6uw.png?1',
-		// Function when resource is loaded
-		function(texture) {
-		  // do something with the texture
-		  // Plane with default texture coordinates [0,1]x[0,1]
-			stop = new THREE.MeshBasicMaterial({
-			map: texture,
-			transparent:true,
-			alphaTest:0.3
-		 });
-		}
-	
-	}
 	
 	
 	
