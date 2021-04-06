@@ -220,10 +220,15 @@ function init() {
 		onResize()
 	})
 	
-	
-    	window.addEventListener('touchstart', onTouchStart, false);
-	
-
+	if(_iOSDevice){
+		window.addEventListener('touchstart', onTouchStart, false);
+		window.addEventListener('touchend', onTouchEnd, false);
+	}
+	else{
+		window.addEventListener ('mousedown', onMouseDown, false);
+		window.addEventListener ('mouseup', onMouseUp, false);
+	}
+		
 }
 
 function animate() {
@@ -239,11 +244,12 @@ function animate() {
 	renderer.render (sceneHUD, cameraHUD);
 	var dt = 0.2;
 	var maxOmega = 10;
-	omega -= .5 * dt;
+	
 	if(cubeSpin){
 	isActive = !isActive;
 		omega+= 0.3*dt;
-	}
+	}else
+		omega -= .5 * dt;
 	
 	omega = clamp(omega,0,maxOmega)
 	angle += omega *dt;
@@ -319,10 +325,14 @@ function onMouseDown (event) {
 	event.preventDefault();
 	let ndcX = (event.clientX / window.innerWidth) * 2 - 1;
 	let ndcY = -(event.clientY / window.innerHeight) * 2 + 1;
-
+	
 	pickCompute (ndcX, ndcY);		
 }	
-
+function onMouseUp(event){
+	console.log ('in mouse up');
+	if(cubeSpin)
+	cubeSpin = !cubeSpin;
+}
 function onTouchStart (event) {
 	console.log ('in touch start')
 
@@ -335,6 +345,11 @@ function onTouchStart (event) {
 		pickCompute (ndcX, ndcY);		
 		
 	}	
+}
+function onTouchEnd(event){
+	console.log ('in touch end')
+	if(cubeSpin)
+	cubeSpin = !cubeSpin;
 }	
 </script>
 </body>
