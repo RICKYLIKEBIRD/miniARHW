@@ -49,6 +49,7 @@ var group;
 var texMat;
 var stop;
 var isActive = false;
+var group2;
 init();
 animate();
 
@@ -179,7 +180,9 @@ function init() {
 	// add a boxGeometry
 
 	group = new THREE.Group();
+	group2 = new THREE.Group();
 	markerRoot.add(group);
+	markerRoot.add(group2);
 	let geometry0 = new THREE.CircleGeometry(0.5,32,Math.PI/2,2*Math.PI/3);
 	let material0 = new THREE.MeshBasicMaterial({color: 0xffff00,side: THREE.DoubleSide});
 	let circle0 = new THREE.Mesh(geometry0,material0);
@@ -195,14 +198,36 @@ function init() {
 	let circle2 = new THREE.Mesh(geometry2,material2);
 	group.add(circle2);
 	
-	let geometry3 = new THREE.CircleGeometry(0.05,0,0.5*Math.PI/3);
-	let material3 = new THREE.MeshBasicMaterial({color: 0xffffff,side: THREE.DoubleSide});
+	let geometry3 = new THREE.CylinderGeometry(0.05,0.05,0.25,32);
+	let material3 = new THREE.MeshBasicMaterial({color: 0x000000});
 	let circle3 = new THREE.Mesh(geometry3,material3);
-	circle3.position.y = 0.05;
-	circle3.position.z = -0.5;
-	//scene.add(mesh);
-	circle3.rotation.x = -Math.PI/2;
-	markerRoot.add(circle3);
+	group2.add(circle3);
+	var edges = new THREE.EdgesHelper(circle3, 0x0000ff);
+    edges.material.linewidth = 2;
+	circle3.position.y = -0.15;
+	edges.position.y = -0.15;
+	
+	let geometry4 = new THREE.CylinderGeometry(0.05,0,0.2,32);
+	let material4 = new THREE.MeshBasicMaterial({color: 0x000000});
+	let circle4 = new THREE.Mesh(geometry4,material4);
+	
+	group2.add(circle4);
+	var edges1 = new THREE.EdgesHelper(circle4, 0x0000ff);
+    edges1.material.linewidth = 2;
+	
+	circle4.position.y = -0.35;
+	edges1.position.y = -0.35;
+	
+	group2.position.y = 0.05;
+	group2.add(edges1);
+	group2.add(edges);//scene.add(mesh);
+	group2.rotation.z = Math.PI;
+	
+	group2.rotation.x = -Math.PI/2;
+	var light = new THREE.PointLight(0xffffff, 5, 100);
+	markerRoot.add(light);
+	
+	group.rotation.z = Math.PI/4;
 	group.rotation.x = -Math.PI/2;
 		
 
@@ -255,15 +280,15 @@ function animate() {
 	
 	if((angle%(2*Math.PI))<(2/3*Math.PI))
 	{
-	   $('#text').css ('color', 'blue'); 
+	   $('#text').css ('color', 'red'); 
 	}
 	else if((2/3*Math.PI<(angle%(2*Math.PI)))&&((angle%(2*Math.PI))<4/3*Math.PI)){
-	   $('#text').css ('color', 'red');
+	   $('#text').css ('color', 'blue');
 	}
 	else if(4/3*Math.PI<(angle%(2*Math.PI))){
 	   $('#text').css ('color', 'yellow');
 	}
-	group.rotation.z = angle;
+	group2.rotation.z = angle;
 	renderer.render(scene, camera);
 	
 
