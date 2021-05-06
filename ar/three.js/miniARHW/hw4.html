@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+
+<html>
+    
+    <head>
+        <style>
+            #info {
+                position: absolute;
+                top: 0px;
+                width: 100%;
+                padding: 10px;
+                text-align: center;
+                color: #ffff00
+            }
+            
+            body {
+                overflow: hidden;
+            }
+            
+        </style>
+    </head>
+    
+    <body>
+        <div id="info">Cannon Firing<br>
+            <button id="up">up</button><br>
+            <button id="left">left</button><button id="fire">fire</button><button id="right">right</button><br>
+            <button id="down">down</button>
+        </div>
+        <script src="https://threejs.org/build/three.min.js"></script>
+        <script src="https://threejs.org/examples/js/controls/OrbitControls.js"></script>
+        <script src="https://jyunming-chen.github.io/tutsplus/js/KeyboardState.js"></script>
+        <script src="https://code.jquery.com/jquery-2.1.4.min.js"></script>
+        
+        <script>
+            var camera, scene, renderer;
+            var cannon;
+            var clock;
+            var ball;
+            var pos, vel, force;
+            var controls, keyboard;
+            const SPEED = 25;
+            
+            class Ball {
+                constructor(barrel, force, direct) {
+                    this.main = new THREE.Mesh(new THREE.CylinderGeometry(0.52, 2, 5, 20), new THREE.MeshNormalMaterial());
+                    this.main.rotation.y = direct;
+                    scene.add(this.main);
+                    
+                    this.vel = barrel.localToWorld(new THREE.Vector3(0, 20, 0))
+                        .sub(
+                            barrel.localToWorld(new THREE.Vector3(0, 0, 0)))
+                        .setLength(SPEED);
+                    this.pos = barrel.localToWorld(new THREE.Vector3(0, 22, 0));
+                    this.force = force;
+                    /*
+					// Euler's method
+					let force = new THREE.Vector3 (0,-10,0);    // gravity
+					force.add (new THREE.Vector3(0,0,2));        // wind
+					force.add (vel.clone().multiplyScalar (-0.1251)); // drag
+  
+					vel.add (force.multiplyScalar(dt));
+					pos.add (vel.clone().multiplyScalar(dt));
+					ball.position.copy (pos);
+					*/
+                }
+                
+                update(dt) {
+                    
+                    // Euler's method
+                    this.vel.add(this.force.clone().multiplyScalar(dt));
+                    let prePos = this.pos.clone();
+                    this.pos.add(this.vel.clone().multiplyScalar(dt));
+                    this.main.position.copy(this.pos);
+                    this.main.quaternion.setFromUnitVectors(new THREE.Vector3(0, 1, 0), this.pos.clone().sub(prePos).normalize());
+                }
+            }
+            
+            class Cannon {
+                constructor() {
+                    
+                    this.main = new THREE.Group();
+                    this.barrelPart = new THREE.Group();
+                    
+                    let geometry = new THREE.SphereGeometry(10, 20, 20, Math.PI + Math.PI * 0.1, Math.PI * 1.8, 0, Math.PI / 2);
+                    let material = new THREE.MeshNormalMaterial();
+                    let body = new THREE.Mesh(geometry, material);
+                    this.main.add(body);
+                    
+                    let geometry1 = new THREE.CylinderGeometry(2, 2, 20, 18);
+                    let material1 = new THREE.MeshNormalMaterial();
+                    let barrel = new THREE.Mesh(geometry1, material);
+                    barrel.position.y = 10;
+                    this.barrelPart.add(barrel);
+                    this.barrelPart.rotation.z = -Math.PI / 6;
+                    this.main.add(this.barrelPart);
+                    
+                    this.vel = barrel.localToWorld(new THREE.Vector3(0, 20, 0))
+                        .sub(
+                            barrel.localToWorld(new THREE.Vector3(0, 0, 0)))
+                        .setLength(SPEED);
+                    
+                    this.force = new THREE.Vector3(0, -10, 0); // gravity
+                    this.force.add(new THREE.Vector3(0, 0, 2)); // wind
+                    this.force.add(this.vel.clone()
+                        .multiplyScalar(-0.1251)); // drag
+                    this.fire = false;
+                    
+                }
+                
+                update(dt) {
+                    $('#up')
+                        .click(
+                            function () {
+                                if (cannon.barrelPart.rotation.z < -0.1)
+                                    cannon.barrelPart.rotation.z += 0.0005;
+                                var aaa = $(this);
+                                aaa.prop('disabled', true);
+                                setTimeout(function () {
+                                    aaa.prop('disabled', false);
+                                }, 300);
+                            }
+                        )
+                    $('#down')
+                        .click(
+                            function () {
+                                if (cannon.barrelPart.rotation.z >= -Math.PI / 2.2)
+                                    cannon.barrelPart.rotation.z -= 0.0005;
+                                var aaa = $(this);
+                                aaa.prop('disabled', true);
+                                setTimeout(function () {
+                                    aaa.prop('disabled', false);
+                                }, 300);
+                            }
+                        )
+                    $('#left')
+                        .click(
+                            function () {
+                                cannon.main.rotation.y += 0.0005;
+                                var aaa = $(this);
+                                aaa.prop('disabled', true);
+                                setTimeout(function () {
+                                    aaa.prop('disabled', false);
+                                }, 300);
+                            }
+                        )
+                    $('#right')
+                        .click(
+                            function () {
+                                cannon.main.rotation.y -= 0.0005;
+                                var aaa = $(this);
+                                aaa.prop('disabled', true);
+                                setTimeout(function () {
+                                    aaa.prop('disabled', false);
+                                }, 300);
+                            }
+                        )
+                    
+                    $('#fire')
+                        .click(
+                            function () {
+                                firing(cannon);
+                                var aaa = $(this);
+                                aaa.prop('disabled', true);
+                                setTimeout(function () {
+                                    aaa.prop('disabled', false);
+                                }, 1500);
+                            }
+                        )
+                    
+                    // shooting control
+                    if (keyboard.down('space')) {
+                        if (!this.fire) {
+                            this.fire = true;
+                            this.cannonball = new Ball(this.barrelPart, this.force, this.main.rotation.y);
+                        }
+                    }
+                    
+                    if (this.fire) {
+                        this.cannonball.update(dt);
+                        if (this.cannonball.pos.y < 0) {
+                            
+                            scene.remove(this.cannonball.main);
+                            this.fire = false;
+                        }
+                    }
+                    
+                    // Turning control
+                    if (keyboard.pressed('left')) {
+                        this.main.rotation.y += 0.05;
+                    }
+                    
+                    if (keyboard.pressed('right')) {
+                        this.main.rotation.y -= 0.05;
+                    }
+                    
+                    if (keyboard.pressed('up') && this.barrelPart.rotation.z < -0.1) {
+                        this.barrelPart.rotation.z += 0.05;
+                    }
+                    
+                    if (keyboard.pressed('down') && this.barrelPart.rotation.z >= -Math.PI / 2.2) {
+                        this.barrelPart.rotation.z -= 0.05;
+                    }
+                    
+                    this.drawLine();
+                }
+                
+                drawLine() {
+                    let points = [];
+                    const SPEED = 25;
+                    
+                    let vel = this.barrelPart.localToWorld(new THREE.Vector3(0, 20, 0))
+                        .sub(this.barrelPart.localToWorld(new THREE.Vector3(0, 0, 0)))
+                        .setLength(SPEED);
+                    let pos = this.barrelPart.localToWorld(new THREE.Vector3(0, 22, 0));
+                    for (let i = 0; pos.y > 0; i++) {
+                        points.push(pos.clone());
+                        vel.add(this.force.clone()
+                            .multiplyScalar(0.05));
+                        pos.add(vel.clone()
+                            .multiplyScalar(0.05));
+                    }
+                    let geometry = new THREE.BufferGeometry()
+                        .setFromPoints(points);
+                    let parabola = new THREE.Line(geometry, new THREE.LineDashedMaterial({
+                        color: 'cyan'
+                    }));
+                    parabola.computeLineDistances(); // required for LineDashedMaterial
+                    scene.remove(this.parabola);
+                    this.parabola = parabola;
+                    scene.add(this.parabola);
+                }
+            }
+            
+            function firing(cannon) {
+                if (!cannon.fire) {
+                    cannon.fire = true;
+                    cannon.cannonball = new Ball(cannon.barrelPart, cannon.force, cannon.main.rotation.y);
+                }
+            }
+            
+            init();
+            animate();
+            
+            function init() {
+                
+                scene = new THREE.Scene();
+                
+                renderer = new THREE.WebGLRenderer();
+                renderer.setSize(window.innerWidth, window.innerHeight);
+                renderer.setClearColor(0x888888);
+                document.body.appendChild(renderer.domElement);
+                
+                camera = new THREE.PerspectiveCamera(50, window.innerWidth / window.innerHeight, 1, 1000);
+                camera.position.set(0, 150, 150);
+                controls = new THREE.OrbitControls(camera, renderer.domElement);
+                var gridXZ = new THREE.GridHelper(200, 20, 'red', 'white');
+                scene.add(gridXZ);
+                
+                ///////////////////////////////////////////////////////////
+                keyboard = new KeyboardState();
+                
+                clock = new THREE.Clock();
+                
+                //// settings //////////////////////
+                cannon = new Cannon();
+                scene.add(cannon.main);
+            }
+            
+            function animate() {
+                requestAnimationFrame(animate);
+                render();
+                
+                let dt = clock.getDelta();
+                controls.update();
+                keyboard.update();
+                cannon.update(dt);
+                
+            }
+            
+            function render() {
+                renderer.render(scene, camera);
+            }
+            
+        </script>
+    </body>
+    
+</html>
